@@ -50,7 +50,7 @@ func NewCmd_Base() *cobra.Command {
 
 // PrepareBaseCmd is meant for tendermint and other servers
 func prepareBaseCmd(cmd *cobra.Command) error {
-	cmd.PersistentFlags().StringVarP(&pass, "pass", "p", "", "-")
-	cmd.PersistentFlags().StringVarP(&DataDir, "data", "d", DataDir, "-")
+	cmd.PersistentFlags().StringVarP(&pass, "pass", "p", "", "the password for sfeeder. the sfeeder secret files are encrypted with it.")
+	cmd.PersistentFlags().StringVarP(&DataDir, "dir", "d", DataDir, "the directory that the sfeeder secret files will be stored. default is $HOME/.sfeeder")
 	return nil
 }

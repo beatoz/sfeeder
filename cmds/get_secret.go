@@ -8,6 +8,7 @@ import (
 )
 
 var targetAddr []byte
+var fullText bool
 
 func NewCmd_GetSecret() *cobra.Command {
 	cmd := &cobra.Command{
@@ -22,6 +23,7 @@ func NewCmd_GetSecret() *cobra.Command {
 
 func addGetSecretFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BytesHexVarP(&targetAddr, "addr", "a", targetAddr, "-")
+	cmd.PersistentFlags().BoolVarP(&fullText, "full", "f", fullText, "set whether the secret value is shown partially or fully.")
 }
 
 func getSecret(cmd *cobra.Command, args []string) error {
@@ -36,22 +38,22 @@ func getSecret(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	l := len(secret)
-	_secret := make([]byte, l)
-	copy(_secret, secret)
-	if l <= 8 {
-		n := libs.MIN(2, l)
-		_secret = append(_secret[:n], []byte("..")...)
-	} else if l <= 16 {
-		s0 := _secret[:2]
-		s1 := _secret[l-2:]
-		_secret = []byte(fmt.Sprintf("%s..%s", s0, s1))
-	} else {
-		s0 := _secret[:4]
-		s1 := _secret[l-4:]
-		_secret = []byte(fmt.Sprintf("%s..%s", s0, s1))
+	if !fullText {
+		l := len(secret)
+		if l <= 8 {
+			n := libs.MIN(2, l)
+			secret = append(secret[:n], []byte("..")...)
+		} else if l <= 16 {
+			s0 := secret[:2]
+			s1 := secret[l-2:]
+			secret = []byte(fmt.Sprintf("%s..%s", s0, s1))
+		} else {
+			s0 := secret[:4]
+			s1 := secret[l-4:]
+			secret = []byte(fmt.Sprintf("%s..%s", s0, s1))
+		}
 	}
 
-	fmt.Println("Secret:", string(_secret))
+	fmt.Println("Secret:", string(secret))
 	return nil
 }
